@@ -1,0 +1,141 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #e8f5e9; /* Light emerald background */
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5c-2 0-4 2-4 4v4c0 2 2 4 4 4s4-2 4-4V9c0-2-2-4-4-4zm0 38c-2 0-4 2-4 4v4c0 2 2 4 4 4s4-2 4-4v-4c0-2-2-4-4-4zm20-20c-2 0-4 2-4 4v4c0 2 2 4 4 4s4-2 4-4v-4c0-2-2-4-4-4zM10 23c-2 0-4 2-4 4v4c0 2 2 4 4 4s4-2 4-4v-4c0-2-2-4-4-4z' fill='%2343a047' fill-opacity='0.1'/%3E%3C/svg%3E");
+}
+
+.container {
+    text-align: center;
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+h1 {
+    color: #1b5e20; /* Dark emerald for heading */
+    margin-bottom: 1.5rem;
+}
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.timer {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #2e7d32; /* Medium emerald for timer */
+}
+
+.dog-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 32px;
+    line-height: 40px;
+    text-align: center;
+    content: "🐕";
+    opacity: 0.8;
+    transition: transform 0.3s ease;
+}
+
+.dog-icon:hover {
+    transform: scale(1.1);
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#startBtn {
+    background-color: #43a047; /* Bright emerald for start button */
+    color: white;
+}
+
+#startBtn:hover {
+    background-color: #388e3c; /* Darker emerald on hover */
+}
+
+#stopBtn {
+    background-color: #81c784; /* Light emerald for stop button */
+    color: #1b5e20; /* Dark emerald text for contrast */
+}
+
+#stopBtn:hover {
+    background-color: #66bb6a; /* Slightly darker on hover */
+}
+
+.reset-container {
+    text-align: center;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+#resetBtn {
+    background-color: #4caf50;
+    color: white;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#resetBtn:hover {
+    background-color: #43a047;
+}
+
+.encouragement-message {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    animation: slideDown 0.3s ease-out;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translate(-50%, -20px);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+} 
