@@ -6,6 +6,7 @@ const startBtn = document.getElementById('startBtn');
 const stopBtn = document.getElementById('stopBtn');
 const resetBtn = document.getElementById('resetBtn');
 const timerDropdown = document.getElementById('timerDropdown');
+const breakDropdown = document.getElementById('breakDropdown');
 
 const encouragingMessagesMap = {
     5: [
@@ -70,8 +71,18 @@ const encouragingMessagesMap = {
     ]
 };
 
+const breakMessages = [
+    "Break time! Stretch and relax! 🧘‍♂️",
+    "Great job! Enjoy your break! ☕",
+    "Rest up, you earned it! 🌿",
+    "Take a deep breath and recharge! 🌬️",
+    "Step away and refresh! 🚶"
+];
+
 let selectedMinutes = parseInt(timerDropdown.value);
+let selectedBreakMinutes = parseInt(breakDropdown.value);
 let timeLeft = selectedMinutes * 60;
+let isBreak = false;
 
 function showMessage(message) {
     const messageDiv = document.createElement('div');
@@ -95,7 +106,7 @@ function updateDisplay() {
     secondsDisplay.textContent = seconds.toString().padStart(2, '0');
     
     // Show encouraging message at each 5-minute mark (except 0)
-    if (minutes > 0 && minutes % 5 === 0 && seconds === 0) {
+    if (!isBreak && minutes > 0 && minutes % 5 === 0 && seconds === 0) {
         const messages = encouragingMessagesMap[selectedMinutes] || ["Keep going!"];
         showMessage(messages[Math.floor(Math.random() * messages.length)]);
     }
@@ -103,39 +114,79 @@ function updateDisplay() {
 
 function startTimer() {
     if (timerId === null) {
-        // Show initial message
-        showMessage("Ready, Set, Go! 🚀");
-        
-        // Remove initial message after 10 seconds
+        if (!isBreak) {
+            showMessage("Ready, Set, Go! 🚀");
+        } else {
+            showMessage("Break time! Enjoy and recharge! 🌿");
+        }
         setTimeout(() => {
             const initialMessage = document.querySelector('.encouragement-message');
-            if (initialMessage && initialMessage.textContent === "Ready, Set, Go! 🚀") {
+            if (initialMessage && (initialMessage.textContent === "Ready, Set, Go! 🚀" || initialMessage.textContent === "Break time! Enjoy and recharge! 🌿")) {
                 initialMessage.remove();
             }
         }, 10000);
-        
         timerId = setInterval(() => {
             timeLeft--;
             updateDisplay();
-            
             if (timeLeft === 0) {
                 clearInterval(timerId);
                 timerId = null;
-                alert('Time is up! Great job staying focused! ��');
-                // Reset to selected value
-                timeLeft = selectedMinutes * 60;
-                updateDisplay();
+                if (!isBreak) {
+                    // Focus session ended, start break
+                    showMessage("Focus complete! Time for a break! ☕");
+                    setTimeout(() => {
+                        const msg = document.querySelector('.encouragement-message');
+                        if (msg && msg.textContent === "Focus complete! Time for a break! ☕") {
+                            msg.remove();
+                        }
+                    }, 5000);
+                    isBreak = true;
+                    timeLeft = selectedBreakMinutes * 60;
+                    setTimeout(() => {
+                        startTimer();
+                        // Show a random break message
+                        showMessage(breakMessages[Math.floor(Math.random() * breakMessages.length)]);
+                        setTimeout(() => {
+                            const breakMsg = document.querySelector('.encouragement-message');
+                            if (breakMsg && breakMessages.includes(breakMsg.textContent)) {
+                                breakMsg.remove();
+                            }
+                        }, 10000);
+                    }, 1000);
+                } else {
+                    // Break ended, reset to focus
+                    alert('Break is over! Ready for another focus session?');
+                    isBreak = false;
+                    timeLeft = selectedMinutes * 60;
+                    updateDisplay();
+                    startBtn.disabled = false;
+                }
             }
         }, 1000);
-        
         startBtn.disabled = true;
     }
 }
 
 timerDropdown.addEventListener('change', function() {
     selectedMinutes = parseInt(timerDropdown.value);
-    timeLeft = selectedMinutes * 60;
-    updateDisplay();
+    if (!isBreak) {
+        timeLeft = selectedMinutes * 60;
+        updateDisplay();
+    }
+    // Remove any existing message when changing duration
+    const existingMessage = document.querySelector('.encouragement-message');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    startBtn.disabled = false;
+});
+
+breakDropdown.addEventListener('change', function() {
+    selectedBreakMinutes = parseInt(breakDropdown.value);
+    if (isBreak) {
+        timeLeft = selectedBreakMinutes * 60;
+        updateDisplay();
+    }
     // Remove any existing message when changing duration
     const existingMessage = document.querySelector('.encouragement-message');
     if (existingMessage) {
@@ -158,6 +209,7 @@ function stopTimer() {
 function resetTimer() {
     clearInterval(timerId);
     timerId = null;
+    isBreak = false;
     timeLeft = selectedMinutes * 60;
     updateDisplay();
     startBtn.disabled = false;
