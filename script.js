@@ -112,6 +112,22 @@ function updateDisplay() {
     }
 }
 
+function playBeep() {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.value = 880;
+    gain.gain.value = 0.1;
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+    oscillator.start();
+    setTimeout(() => {
+        oscillator.stop();
+        ctx.close();
+    }, 200);
+}
+
 function startTimer() {
     if (timerId === null) {
         if (!isBreak) {
@@ -132,29 +148,55 @@ function startTimer() {
                 clearInterval(timerId);
                 timerId = null;
                 if (!isBreak) {
-                    // Focus session ended, start break
-                    showMessage("Focus complete! Time for a break! ☕");
+                    // Focus session ended, check break duration
+                    playBeep();
+                    showMessage("🎉 Congratulations! You completed your focus session! 🎉");
                     setTimeout(() => {
-                        const msg = document.querySelector('.encouragement-message');
-                        if (msg && msg.textContent === "Focus complete! Time for a break! ☕") {
-                            msg.remove();
+                        const congratsMsg = document.querySelector('.encouragement-message');
+                        if (congratsMsg && congratsMsg.textContent.includes('Congratulations!')) {
+                            congratsMsg.remove();
                         }
                     }, 5000);
-                    isBreak = true;
-                    timeLeft = selectedBreakMinutes * 60;
-                    setTimeout(() => {
-                        startTimer();
-                        // Show a random break message
-                        showMessage(breakMessages[Math.floor(Math.random() * breakMessages.length)]);
+                    if (selectedBreakMinutes === 0) {
+                        // Skip break, go straight to next focus session
+                        alert('Focus complete! No break selected. Ready for another focus session?');
+                        isBreak = false;
+                        timeLeft = selectedMinutes * 60;
+                        updateDisplay();
+                        startBtn.disabled = false;
+                    } else {
+                        // Start break as usual
+                        showMessage("Focus complete! Time for a break! ☕");
                         setTimeout(() => {
-                            const breakMsg = document.querySelector('.encouragement-message');
-                            if (breakMsg && breakMessages.includes(breakMsg.textContent)) {
-                                breakMsg.remove();
+                            const msg = document.querySelector('.encouragement-message');
+                            if (msg && msg.textContent === "Focus complete! Time for a break! ☕") {
+                                msg.remove();
                             }
-                        }, 10000);
-                    }, 1000);
+                        }, 5000);
+                        isBreak = true;
+                        timeLeft = selectedBreakMinutes * 60;
+                        setTimeout(() => {
+                            startTimer();
+                            // Show a random break message
+                            showMessage(breakMessages[Math.floor(Math.random() * breakMessages.length)]);
+                            setTimeout(() => {
+                                const breakMsg = document.querySelector('.encouragement-message');
+                                if (breakMsg && breakMessages.includes(breakMsg.textContent)) {
+                                    breakMsg.remove();
+                                }
+                            }, 10000);
+                        }, 1000);
+                    }
                 } else {
                     // Break ended, reset to focus
+                    playBeep();
+                    showMessage("👏 Great job! Break is over! Ready for another focus session?");
+                    setTimeout(() => {
+                        const breakCongrats = document.querySelector('.encouragement-message');
+                        if (breakCongrats && breakCongrats.textContent.includes('Break is over')) {
+                            breakCongrats.remove();
+                        }
+                    }, 5000);
                     alert('Break is over! Ready for another focus session?');
                     isBreak = false;
                     timeLeft = selectedMinutes * 60;
